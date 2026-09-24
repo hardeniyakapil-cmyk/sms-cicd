@@ -8,26 +8,10 @@ on:
 jobs:
 
   # ==========================================
-  # STAGE 1: LOGIN
-  # ==========================================
-  login:
-    name: Docker Hub Login
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-
-  # ==========================================
-  # STAGE 2: BUILD & PUSH BACKEND
+  # STAGE 1: BUILD & PUSH BACKEND
   # ==========================================
   build-backend:
     name: Build and Push Backend
-    needs: login
     runs-on: ubuntu-latest
 
     steps:
@@ -52,13 +36,11 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sms-backend:v${{ github.run_number }}
 
-
   # ==========================================
-  # STAGE 3: BUILD & PUSH FRONTEND
+  # STAGE 2: BUILD & PUSH FRONTEND
   # ==========================================
   build-frontend:
     name: Build and Push Frontend
-    needs: login
     runs-on: ubuntu-latest
 
     steps:
@@ -83,9 +65,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sms-frontend:v${{ github.run_number }}
 
-
   # ==========================================
-  # STAGE 4: DEPLOY BACKEND
+  # STAGE 3: DEPLOY BACKEND
   # ==========================================
   deploy-backend:
     name: Deploy Backend
@@ -93,17 +74,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check SSH connection
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "SSH CONNECTION SUCCESS"
-            whoami
-            hostname
-
       - name: Deploy Backend to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -126,9 +96,8 @@ jobs:
 
             echo "Backend deployed successfully"
 
-
   # ==========================================
-  # STAGE 5: DEPLOY FRONTEND
+  # STAGE 4: DEPLOY FRONTEND
   # ==========================================
   deploy-frontend:
     name: Deploy Frontend
@@ -136,17 +105,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check SSH connection
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "SSH CONNECTION SUCCESS"
-            whoami
-            hostname
-
       - name: Deploy Frontend to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:

@@ -47,7 +47,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backend
-          file: ./backend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sms-backend:v${{ github.run_number }}
@@ -78,7 +77,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
-          file: ./frontend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sms-frontend:v${{ github.run_number }}
